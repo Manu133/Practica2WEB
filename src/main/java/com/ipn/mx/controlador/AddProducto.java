@@ -4,8 +4,14 @@
  */
 package com.ipn.mx.controlador;
 
+import com.ipn.mx.modelo.dao.CategoriaDAO;
+import com.ipn.mx.modelo.dto.CategoriaDTO;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -19,18 +25,12 @@ import jakarta.servlet.http.HttpServletResponse;
  */
 public class AddProducto extends HttpServlet {
 
-    /**
-     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
-     * methods.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+            throws ServletException, IOException, SQLException {
         response.setContentType("text/html;charset=UTF-8");
+        request.setCharacterEncoding("UTF-8");
+        CategoriaDAO dao = new CategoriaDAO();
+        ArrayList<CategoriaDTO> categorias = dao.selectAll();
         try ( PrintWriter out = response.getWriter()) {
             /* TODO output your page here. You may use following sample code. */
             out.println("<!DOCTYPE html>\n" +
@@ -95,20 +95,28 @@ public class AddProducto extends HttpServlet {
 "          <div class=\"card-body\">\n" +
 "            <form action=\"Agregado\" method=\"POST\">\n" +
 "              <div class=\"mb-3\"> <label>Nombre Producto</label></div>\n" +
-"              <div class=\"mb-3\"><input class=\"form-control\" type=\"text\" name=\"nombreCat\" value=\"\"></div>\n" +
+"              <div class=\"mb-3\"><input class=\"form-control\" type=\"text\" name=\"nombreProd\" ></div>\n" +
 "              <div class=\"mb-3\"> <label>Descripción</label></div>\n" +
-"              <div class=\"mb-3\"><input class=\"form-control\" type=\"text\" name=\"descCat\" value=\"\"></div>\n" +
+"              <div class=\"mb-3\"><input class=\"form-control\" type=\"text\" name=\"descProd\" ></div>\n" +
 "              <div class=\"mb-3\"> <label>Precio</label></div>\n" +
-"              <div class=\"mb-3\"><input class=\"form-control\" type=\"text\" name=\"precioCat\" value=\"\"></div>\n" +
+"              <div class=\"mb-3\"><input class=\"form-control\" type=\"text\" name=\"precioProd\" ></div>\n" +
 "              <div class=\"mb-3\"> <label>Inventario</label></div>\n" +
-"              <div class=\"mb-3\"><input class=\"form-control\" type=\"text\" name=\"invCat\" value=\"\"></div>\n" +
+"              <div class=\"mb-3\"><input class=\"form-control\" type=\"text\" name=\"invProd\" ></div>\n" +
 "              <div class=\"mb-3\"> <label>Categoria</label></div>\n" +
-"              <div class=\"mb-3\"><select class=\"form-select\" name=\"categoria\">+\n" +
-"\"  <option selected>Open this select menu</option>\\n\" +\n" +
-"\"  <option value=\\\"1\\\">1</option>\\n\" +\n" +
-"\"  <option value=\\\"2\\\">2</option>\\n\" +\n" +
-"\"  <option value=\\\"3\\\">3</option>\\n\" </div>\n" +
-"</select></div>               <div class=\"mb-3\"><button class=\"btn btn-secondary w-100\" type=\"submint\" value=\"enviar\">Añadir</button> </div>\n" +
+"              <div class=\"mb-3\"><select class=\"form-select\" name=\"categoria\">");
+            int i =1;
+            for(CategoriaDTO dto: categorias){
+                if(i==1){
+                    out.println("<option value=\""+ dto.getEntidad().getNombreCategoria()+"\"selected>"+dto.getEntidad().getNombreCategoria()+"</option>");
+                            
+                }else{
+                    out.println("<option value=\""+ dto.getEntidad().getNombreCategoria()+"\"selected>"+dto.getEntidad().getNombreCategoria()+"</option>");out.println("<option value=\""+ dto.getEntidad().getNombreCategoria()+"\">"+dto.getEntidad().getNombreCategoria()+"</option>");
+                }
+                i++;
+            }
+            
+            out.println("</select>");
+            out.println("</div>               <div class=\"mb-3\"><button class=\"btn btn-secondary w-100\" type=\"submint\">Añadir</button> </div>\n" +
 "            </form>\n" +
 "            \n" +
 "          </div>\n" +
@@ -131,7 +139,11 @@ public class AddProducto extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        try {
+            processRequest(request, response);
+        } catch (SQLException ex) {
+            Logger.getLogger(AddProducto.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     /**
@@ -145,7 +157,11 @@ public class AddProducto extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        try {
+            processRequest(request, response);
+        } catch (SQLException ex) {
+            Logger.getLogger(AddProducto.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     /**

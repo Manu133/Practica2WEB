@@ -4,8 +4,14 @@
  */
 package com.ipn.mx.controlador;
 
+import com.ipn.mx.modelo.dao.CategoriaDAO;
+import com.ipn.mx.modelo.dto.CategoriaDTO;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -28,8 +34,11 @@ public class CategoriaServ extends HttpServlet {
      * @throws IOException if an I/O error occurs
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+            throws ServletException, IOException, SQLException {
         response.setContentType("text/html;charset=UTF-8");
+        request.setCharacterEncoding("UTF-8");
+        CategoriaDAO dao = new CategoriaDAO();
+	ArrayList<CategoriaDTO> categorias = dao.selectAll();
         try ( PrintWriter out = response.getWriter()) {
             /* TODO output your page here. You may use following sample code. */
             out.println("<!DOCTYPE html>\n" +
@@ -94,26 +103,23 @@ public class CategoriaServ extends HttpServlet {
 "            <th>Eliminar</th>\n" +
 "            <th>Actualizar</th>\n" +
 "          </tr>");
-             out.println(" <tr>\n" +
-"            <th><a class=\"btn btn-light\" href=\"VerCategoria\" id=\"\">1</a></th>\n" +
-"            <th>Tecnologia</th>\n" +
-"            <th>Celulares, computadoras, discos duros, videojuegos, cables, baterías, etc.</th>\n" +
-"            <th><a class=\"btn btn-danger\" href=\"CategoriaEliminada\" id=\"\">Eliminar</a></th>\n" +
-"            <th><a class=\"btn btn-success\" href=\"EditCategoria\" id=\"\">Actualizar</a></th>\n" +
-"          </tr>\n" +
-"          \n" +
-"      </div>\n" +
-"    </div>");
-             out.println(" <tr>\n" +
-"            <th><a class=\"btn btn-light\" href=\"VerCategoria\" id=\"\">2</a></th>\n" +
-"            <th>Limpieza</th>\n" +
-"            <th>Articulos de limpieza del hogar como fabuloso, suavitel, cloro, escobas, etc.</th>\n" +
-"            <th><a class=\"btn btn-danger\" href=\"CategoriaEliminada\" id=\"\">Eliminar</a></th>\n" +
-"            <th><a class=\"btn btn-success\" href=\"EditCategoria\" id=\"\">Actualizar</a></th>\n" +
-"          </tr>\n" +
-"          \n" +
-"      </div>\n" +
-"    </div>");
+            for(CategoriaDTO dto: categorias){
+                out.println("<tr>");
+                out.println("<td><a class=\"btn btn-light\" href=VerCategoria?id=" + dto.getEntidad().getIdCategoria()+ ">" + dto.getEntidad().getIdCategoria() + "</a></td>");
+                out.println("<td>" + dto.getEntidad().getNombreCategoria()+ "</td>");
+		out.println("<td>" + dto.getEntidad().getDescripcionCategoria() + "</td>");
+		out.println("<td>");
+                out.println("<a class=\"btn btn-danger\" href=CategoriaEliminada?id=" + dto.getEntidad().getIdCategoria()+ ">Eliminar</a>");
+                out.println("</td>");
+                out.println("<td>");
+		out.println("<a class=\"btn btn-success\" href=EditCategoria?id=" + dto.getEntidad().getIdCategoria()+ ">Actualizar</a>");
+		out.println("</td>");
+		out.println("</tr>");
+            }
+             
+             out.println("</table>");
+	    out.println("</div>");
+	    out.println("</div>");
              
               out.println(" </body>\n" +
 "</html>");
@@ -133,7 +139,11 @@ public class CategoriaServ extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        try {
+            processRequest(request, response);
+        } catch (SQLException ex) {
+            Logger.getLogger(CategoriaServ.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     /**
@@ -147,7 +157,11 @@ public class CategoriaServ extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        try {
+            processRequest(request, response);
+        } catch (SQLException ex) {
+            Logger.getLogger(CategoriaServ.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     /**
