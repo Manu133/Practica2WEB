@@ -4,8 +4,15 @@
  */
 package com.ipn.mx.controlador;
 
+import com.ipn.mx.modelo.dao.CategoriaDAO;
+import com.ipn.mx.modelo.dto.CategoriaDTO;
+import com.ipn.mx.modelo.dao.ProductoDAO;
+import com.ipn.mx.modelo.dto.ProductoDTO;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -28,8 +35,30 @@ public class Agregado extends HttpServlet {
      * @throws IOException if an I/O error occurs
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+            throws ServletException, IOException, SQLException {
         response.setContentType("text/html;charset=UTF-8");
+        request.setCharacterEncoding("UTF-8");
+        String nombreProducto = request.getParameter("nombreProd");
+        String descripcionProducto = request.getParameter("descProd");
+        int precio = Integer.parseInt(request.getParameter("precioProd"));
+        int existencia = Integer.parseInt(request.getParameter("invProd"));
+        String categoria = request.getParameter("categoria");
+        CategoriaDAO dao = new CategoriaDAO();
+	CategoriaDTO dto1 = new CategoriaDTO();
+        dto1.getEntidad().setNombreCategoria(categoria);
+	CategoriaDTO dto2 = dao.selectByName(dto1);
+        
+        ProductoDTO dtop = new ProductoDTO();
+	ProductoDAO daop = new ProductoDAO();
+        
+        dtop.getEntidad().setNombreProducto(nombreProducto);
+        dtop.getEntidad().setDescripcionProducto(descripcionProducto);
+        dtop.getEntidad().setPrecio(precio);
+        dtop.getEntidad().setExistencia(existencia);
+        dtop.getEntidad().setIdCategoria(dto2.getEntidad().getIdCategoria());
+        
+        daop.create(dtop);
+        
         try ( PrintWriter out = response.getWriter()) {
             /* TODO output your page here. You may use following sample code. */
             out.println("<!DOCTYPE html>\n" +
@@ -114,7 +143,11 @@ public class Agregado extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        try {
+            processRequest(request, response);
+        } catch (SQLException ex) {
+            Logger.getLogger(Agregado.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     /**
@@ -128,7 +161,11 @@ public class Agregado extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        try {
+            processRequest(request, response);
+        } catch (SQLException ex) {
+            Logger.getLogger(Agregado.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     /**

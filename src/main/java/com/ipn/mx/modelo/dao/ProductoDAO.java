@@ -10,6 +10,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -32,7 +33,7 @@ public class ProductoDAO {
     
     private void obtenerConexion(){
         String usuario = "root";
-        String clave = "escom";
+        String clave = "root";
         String driverMysql = "com.mysql.cj.jdbc.Driver";
         String url = "jdbc:mysql://localhost:3306/ejercicio1_3cm17";
         
@@ -55,10 +56,10 @@ public class ProductoDAO {
             ps.setString(2, dto.getEntidad().getDescripcionProducto());
             ps.setInt(3, dto.getEntidad().getPrecio());
             ps.setInt(4, dto.getEntidad().getExistencia());
-            ps.setInt(5, dto.getEntidad().getIdCategoria());
+            ps.setLong(5, dto.getEntidad().getIdCategoria());
             ps.executeUpdate();
         }finally{
-            if(ps != null) ps.close();;
+            if(ps != null) ps.close();
             if(con != null) con.close();
         }
     }
@@ -76,7 +77,7 @@ public class ProductoDAO {
             ps.setInt(6, dto.getEntidad().getIdProducto());
             ps.executeUpdate();
         }finally{
-            if(ps != null) ps.close();;
+            if(ps != null) ps.close();
             if(con != null) con.close();
         }
     }
@@ -89,12 +90,13 @@ public class ProductoDAO {
             ps.setInt(1, dto.getEntidad().getIdProducto());
             ps.executeUpdate();
         }finally{
-            if(ps != null) ps.close();;
+            if(ps != null) ps.close();
             if(con != null) con.close();
         }
     }
     
-    public void selectAll(ProductoDTO dto) throws SQLException{
+    public ArrayList<ProductoDTO> selectAll() throws SQLException{
+        ArrayList<ProductoDTO> productos = new ArrayList<>();
         obtenerConexion();
         PreparedStatement ps = null;
         ResultSet rs = null;
@@ -102,17 +104,26 @@ public class ProductoDAO {
             ps = con.prepareStatement(SQL_SELECT_ALL);
             rs = ps.executeQuery();
             while (rs.next()) {                          
-                System.out.println("Clave: "+rs.getInt("idProducto") + ", Nombre: " + rs.getString("nombreProducto")
-                + ", Descripcion: " + rs.getString("descripcionProducto") + ", Precio: " + rs.getInt("precio") + ", Existencia: " + rs.getInt("existencia") 
-                + ", Categoria: " + rs.getInt("idCategoria"));
+                ProductoDTO dto = new ProductoDTO();
+                dto.getEntidad().setIdProducto( rs.getInt(1));
+                dto.getEntidad().setNombreProducto(rs.getString(2));
+                dto.getEntidad().setDescripcionProducto(rs.getString(3));
+                dto.getEntidad().setPrecio((int) rs.getLong(4));
+                dto.getEntidad().setExistencia( rs.getInt(5));
+                dto.getEntidad().setIdCategoria(rs.getInt(6));
+                productos.add(dto);
             }
         }finally{
-            if(ps != null) ps.close();;
+            if(rs != null) rs.close();
+            if(ps != null) ps.close();
             if(con != null) con.close();
         }
+        if(productos.size()>0) return productos;
+        return null;
     }
     
-    public void select(ProductoDTO dto) throws SQLException{
+    public ProductoDTO select(ProductoDTO dto) throws SQLException{
+        ProductoDTO dtoResultado=null;
         obtenerConexion();
         PreparedStatement ps = null;
         ResultSet rs = null;
@@ -120,13 +131,20 @@ public class ProductoDAO {
             ps = con.prepareStatement(SQL_SELECT);
             ps.setInt(1, dto.getEntidad().getIdProducto());
             rs = ps.executeQuery();
-            rs.next();
-                System.out.println("Clave: "+rs.getInt("idProducto") + ", Nombre: " + rs.getString("nombreProducto")
-                + ", Descripcion: " + rs.getString("descripcionProducto") + ", Precio: " + rs.getInt("precio") + ", Existencia: " + rs.getInt("existencia") 
-                + ", Categoria: " + rs.getInt("idCategoria"));
+            if(rs.next()){
+                dtoResultado = new ProductoDTO();
+                dto.getEntidad().setIdProducto( rs.getInt(1));
+                dto.getEntidad().setNombreProducto(rs.getString(2));
+                dto.getEntidad().setDescripcionProducto(rs.getString(3));
+                dto.getEntidad().setPrecio((int) rs.getLong(4));
+                dto.getEntidad().setExistencia( rs.getInt(5));
+                dto.getEntidad().setIdCategoria(rs.getInt(6));
+            }    
         }finally{
-            if(ps != null) ps.close();;
+            if(rs != null) rs.close();
+            if(ps != null) ps.close();
             if(con != null) con.close();
         }
+        return dtoResultado;
     }
 }

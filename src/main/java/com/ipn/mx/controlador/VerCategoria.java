@@ -3,9 +3,14 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
  */
 package com.ipn.mx.controlador;
-
+import com.ipn.mx.modelo.dao.CategoriaDAO;
+import com.ipn.mx.modelo.dto.CategoriaDTO;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -28,8 +33,11 @@ public class VerCategoria extends HttpServlet {
      * @throws IOException if an I/O error occurs
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+            throws ServletException, IOException, SQLException {
         response.setContentType("text/html;charset=UTF-8");
+        request.setCharacterEncoding("UTF-8");
+        CategoriaDAO dao = new CategoriaDAO();
+	ArrayList<CategoriaDTO> categorias = dao.selectAll();
         try ( PrintWriter out = response.getWriter()) {
             /* TODO output your page here. You may use following sample code. */
             out.println("<!DOCTYPE html>\n" +
@@ -82,11 +90,12 @@ public class VerCategoria extends HttpServlet {
 "      <div class=\"row pt-2\">\n" +
 "        <div class=\"mb-3\">\n" +
 "          <h2 class=\"text-center\">Ver Categoria</h2>\n" +
-"        </div>\n" + "<div class=\"mb-3\"><a class=\"btn btn-dark w-100\" href=\"javascript: history.go(-1)\">Regresar</a></div>"+
-"        <table class=\"table table-dark w-100 table-striped\"\\> \n" +
-"          <tr>\n" +
-"            <th>ID</th>\n" +
-"            <th>1</th>\n" +
+"        </div>\n" + "<div class=\"mb-3\"><a class=\"btn btn-dark w-100\" href=\"javascript: history.go(-1)\">Regresar</a></div>");
+            
+            out.println("<table class=\"table table-dark w-100 table-striped\">");
+             out.println("<tr>");
+            out.println("<th>ID</th>" );
+            out.println("<th>1</th>\n" +
 "          </tr><tr>\n" +
 "            <th>Nombre</th>\n" +
 "            <th>Tecnologia</th>\n" +
@@ -111,7 +120,11 @@ public class VerCategoria extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        try {
+            processRequest(request, response);
+        } catch (SQLException ex) {
+            Logger.getLogger(VerCategoria.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     /**
@@ -125,7 +138,11 @@ public class VerCategoria extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        try {
+            processRequest(request, response);
+        } catch (SQLException ex) {
+            Logger.getLogger(VerCategoria.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     /**
