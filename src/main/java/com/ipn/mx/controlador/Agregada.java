@@ -4,8 +4,13 @@
  */
 package com.ipn.mx.controlador;
 
+ import com.ipn.mx.modelo.dao.CategoriaDAO;
+import com.ipn.mx.modelo.dto.CategoriaDTO;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -28,8 +33,16 @@ public class Agregada extends HttpServlet {
      * @throws IOException if an I/O error occurs
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+            throws ServletException, IOException, SQLException {
         response.setContentType("text/html;charset=UTF-8");
+        request.setCharacterEncoding("UTF-8");
+        String Categoria = request.getParameter("nombreCat");
+        String Descripcion = request.getParameter("descCat");
+        CategoriaDTO dto = new CategoriaDTO();
+        dto.getEntidad().setNombreCategoria(Categoria);
+        dto.getEntidad().setDescripcionCategoria(Descripcion);
+        CategoriaDAO dao = new CategoriaDAO();
+        dao.insert(dto);
         try ( PrintWriter out = response.getWriter()) {
             /* TODO output your page here. You may use following sample code. */
             out.println("<!DOCTYPE html>\n" +
@@ -114,7 +127,11 @@ public class Agregada extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        try {
+            processRequest(request, response);
+        } catch (SQLException ex) {
+            Logger.getLogger(Agregada.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     /**
@@ -128,7 +145,11 @@ public class Agregada extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        try {
+            processRequest(request, response);
+        } catch (SQLException ex) {
+            Logger.getLogger(Agregada.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     /**

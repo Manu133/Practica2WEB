@@ -4,8 +4,13 @@
  */
 package com.ipn.mx.controlador;
 
+import com.ipn.mx.modelo.dao.CategoriaDAO;
+import com.ipn.mx.modelo.dto.CategoriaDTO;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -29,8 +34,15 @@ public class CategoriaEliminada extends HttpServlet {
      * @throws IOException if an I/O error occurs
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+            throws ServletException, IOException, SQLException  {
         response.setContentType("text/html;charset=UTF-8");
+        request.setCharacterEncoding("UTF-8");
+	String id = request.getParameter("id");
+	int idCategoria = Integer.parseInt(id);
+	CategoriaDAO dao = new CategoriaDAO();
+	CategoriaDTO dto1 = new CategoriaDTO();
+	dto1.getEntidad().setIdCategoria(idCategoria);
+	dao.delete(dto1);
         try ( PrintWriter out = response.getWriter()) {
             /* TODO output your page here. You may use following sample code. */
             out.println("<!DOCTYPE html>\n" +
@@ -82,7 +94,7 @@ public class CategoriaEliminada extends HttpServlet {
             out.println("<div class=\"container\">\n" +
 "      <div class=\"row pt-2\">\n" +
 "        <div class=\"mb-3\">\n" +
-"          <a class=\"btn btn-dark w-100\" href=\"javascript: history.go(-1)\"\n" +
+"          <a class=\"btn btn-dark w-100\" href=\"CategoriaServ\"\n" +
 "            >Regresar</a\n" +
 "          >\n" +
 "        </div>\n" +
@@ -115,7 +127,11 @@ public class CategoriaEliminada extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        try {
+            processRequest(request, response);
+        } catch (SQLException ex) {
+            Logger.getLogger(CategoriaEliminada.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     /**
@@ -129,7 +145,11 @@ public class CategoriaEliminada extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        try {
+            processRequest(request, response);
+        } catch (SQLException ex) {
+            Logger.getLogger(CategoriaEliminada.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     /**

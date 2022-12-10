@@ -4,8 +4,14 @@
  */
 package com.ipn.mx.controlador;
 
+import com.ipn.mx.modelo.dao.CategoriaDAO;
+import com.ipn.mx.modelo.dto.CategoriaDTO;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -28,8 +34,15 @@ public class EditCategoria extends HttpServlet {
      * @throws IOException if an I/O error occurs
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+            throws ServletException, IOException, SQLException {
         response.setContentType("text/html;charset=UTF-8");
+        request.setCharacterEncoding("UTF-8");
+	String id = request.getParameter("id");
+	int idCategoria = Integer.parseInt(id);
+	CategoriaDAO dao = new CategoriaDAO();
+	CategoriaDTO dto1 = new CategoriaDTO();
+	dto1.getEntidad().setIdCategoria(idCategoria);
+	CategoriaDTO dto2 = dao.select(dto1);
         try ( PrintWriter out = response.getWriter()) {
             /* TODO output your page here. You may use following sample code. */
             out.println("<!DOCTYPE html>\n" +
@@ -92,19 +105,22 @@ public class EditCategoria extends HttpServlet {
 "        <div class=\"card text-white bg-dark\">\n" +
 "          <div class=\"card-header text-center\">Actualizar Categoria</div>\n" +
 "          <div class=\"card-body\">\n" +
-"            <form action=\"Actualizada\" method=\"POST\">\n" +
-"              <div class=\"mb-3\"> <label>Categoria</label></div>\n" +
-"              <div class=\"mb-3\"><input class=\"form-control\" type=\"text\" name=\"nombreCat\" value=\"Nombre de la categoria\"></div>\n" +
-"              <div class=\"mb-3\"> <label>Descripción</label></div>\n" +
-"              <div class=\"mb-3\"><input class=\"form-control\" type=\"text\" name=\"descCat\" value=\"Descripción de la categoria\"></div>\n" +
-"              <div class=\"mb-3\"><button class=\"btn btn-secondary w-100\" type=\"submint\" value=\"enviar\">Actualizar</button> </div>\n" +
+"            <form action=\"Actualizada\" method=\"POST\">\n" );
+out.println("              <div class=\"mb-3\"> <label>Id Categoria</label></div>\n");
+out.println("              <div class=\"mb-3\"><input class=\"form-control\" type=\"text\" name=\"idCat\" value=\""+ dto1.getEntidad().getIdCategoria() +"\"></div>\n" +
+"              <div class=\"mb-3\"> " );
+out.println("              <div class=\"mb-3\"> <label>Nombre Producto</label></div>\n");
+out.println("              <div class=\"mb-3\"><input class=\"form-control\" type=\"text\" name=\"nombreCat\" value=\""+ dto2.getEntidad().getNombreCategoria() +"\"></div>\n" +
+"              <div class=\"mb-3\"> <label>Descripción</label></div>\n" );
+out.println("              <div class=\"mb-3\"><input class=\"form-control\" type=\"text\" name=\"descCat\" value=\""+ dto2.getEntidad().getDescripcionCategoria() +"\"></div>\n" );
+            
+out.println("</select></div>               <div class=\"mb-3\"><button class=\"btn btn-secondary w-100\" type=\"submint\" >Actualizar</button> </div>\n" +
 "            </form>\n" +
 "            \n" +
 "          </div>\n" +
 "      </div>\n" +
 "    </div>");
-            out.println("");
-            out.println("</body>");
+out.println("</body>");
             out.println("</html>");
         }
     }
@@ -121,7 +137,11 @@ public class EditCategoria extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        try {
+            processRequest(request, response);
+        } catch (SQLException ex) {
+            Logger.getLogger(EditCategoria.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     /**
@@ -135,7 +155,11 @@ public class EditCategoria extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        try {
+            processRequest(request, response);
+        } catch (SQLException ex) {
+            Logger.getLogger(EditCategoria.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     /**

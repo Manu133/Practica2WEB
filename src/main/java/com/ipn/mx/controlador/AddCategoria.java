@@ -86,10 +86,10 @@ public class AddCategoria extends HttpServlet {
 "          <div class=\"card-body\">\n" +
 "            <form action=\"Agregada\" method=\"POST\">\n" +
 "              <div class=\"mb-3\"> <label>Nombre Categoria</label></div>\n" +
-"              <div class=\"mb-3\"><input class=\"form-control\" type=\"text\" name=\"nombreCat\" value=\"\"></div>\n" +
+"              <div class=\"mb-3\"><input class=\"form-control\" type=\"text\" name=\"nombreCat\" " +
 "              <div class=\"mb-3\"> <label>Descripción</label></div>\n" +
-"              <div class=\"mb-3\"><input class=\"form-control\" type=\"text\" name=\"descCat\" value=\"\"></div>\n" +
-"              <div class=\"mb-3\"><button class=\"btn btn-secondary w-100\" type=\"submint\" value=\"enviar\">Añadir</button> </div>\n" +
+"              <div class=\"mb-3\"><input class=\"form-control\" type=\"text\" name=\"descCat\"></div>\n" +
+"              <div class=\"mb-3\"><button class=\"btn btn-secondary w-100\" type=\"submint\">Añadir</button> </div>\n" +
 "            </form>\n" +
 "            \n" +
 "          </div>\n" +

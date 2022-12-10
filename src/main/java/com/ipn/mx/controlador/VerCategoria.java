@@ -36,8 +36,13 @@ public class VerCategoria extends HttpServlet {
             throws ServletException, IOException, SQLException {
         response.setContentType("text/html;charset=UTF-8");
         request.setCharacterEncoding("UTF-8");
-        CategoriaDAO dao = new CategoriaDAO();
-	ArrayList<CategoriaDTO> categorias = dao.selectAll();
+        String id = request.getParameter("id");
+	int idCategoria = Integer.parseInt(id);
+	CategoriaDAO dao = new CategoriaDAO();
+	CategoriaDTO dto1 = new CategoriaDTO();
+	dto1.getEntidad().setIdCategoria(idCategoria);
+	CategoriaDTO dto2 = dao.select(dto1);
+        
         try ( PrintWriter out = response.getWriter()) {
             /* TODO output your page here. You may use following sample code. */
             out.println("<!DOCTYPE html>\n" +
@@ -94,15 +99,15 @@ public class VerCategoria extends HttpServlet {
             
             out.println("<table class=\"table table-dark w-100 table-striped\">");
              out.println("<tr>");
-            out.println("<th>ID</th>" );
-            out.println("<th>1</th>\n" +
-"          </tr><tr>\n" +
-"            <th>Nombre</th>\n" +
-"            <th>Tecnologia</th>\n" +
-"          </tr><tr>\n" +
-"            <th>Descripcion</th>\n" +
-"            <th>Celulares, computadoras, discos duros, videojuegos, cables, baterías, etc. </th>\n" +
-"          </tr>");
+             out.println("<th>ID</th>\n");
+out.println("<th>"+ id +"</th>");
+out.println("          </tr><tr>\n" +
+"            <th>Nombre</th>\n");
+out.println("            <th>"+dto2.getEntidad().getNombreCategoria()+"</th>");
+out.println("          </tr><tr>\n" +
+"            <th>Descripcion</th>\n" );
+out.println("            <th>"+dto2.getEntidad().getDescripcionCategoria()+"</th>");
+            out.println("</tr>");
             out.println("</body>");
             out.println("</html>");
         }

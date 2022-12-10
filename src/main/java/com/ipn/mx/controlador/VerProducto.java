@@ -4,8 +4,13 @@
  */
 package com.ipn.mx.controlador;
 
+import com.ipn.mx.modelo.dao.ProductoDAO;
+import com.ipn.mx.modelo.dto.ProductoDTO;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -28,8 +33,17 @@ public class VerProducto extends HttpServlet {
      * @throws IOException if an I/O error occurs
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+            throws ServletException, IOException, SQLException {
         response.setContentType("text/html;charset=UTF-8");
+        request.setCharacterEncoding("UTF-8");
+        String id = request.getParameter("id");
+	int idProducto = Integer.parseInt(id);
+	ProductoDAO dao = new ProductoDAO();
+	ProductoDTO dto1 = new ProductoDTO();
+	dto1.getEntidad().setIdProducto(idProducto);
+	ProductoDTO dto2 = dao.select(dto1);
+	String categoria = dao.selectCategoria(dto1);
+        
         try ( PrintWriter out = response.getWriter()) {
             /* TODO output your page here. You may use following sample code. */
             out.println("<!DOCTYPE html>\n" +
@@ -84,25 +98,25 @@ public class VerProducto extends HttpServlet {
 "          <h2 class=\"text-center\">Ver Producto</h2>\n" +
 "        </div>\n" + "<div class=\"mb-3\"><a class=\"btn btn-dark w-100\" href=\"javascript: history.go(-1)\">Regresar</a></div>"+
 "        <table class=\"table table-dark w-100 table-striped\"\\> \n" +
-"          <tr>\n" +
-"            <th>ID</th>\n" +
-"            <th>1</th>\n" +
-"          </tr><tr>\n" +
-"            <th>Nombre</th>\n" +
-"            <th>Papas</th>\n" +
-"          </tr><tr>\n" +
-"            <th>Descripcion</th>\n" +
-"            <th>aqui va una descripcion perrona </th>\n" +
-"          </tr><tr>\n" +
-"            <th>Precio</th>\n" +
-"            <th>$1</th>\n" +
-"          </tr><tr>\n" +
-"            <th>Inventario</th>\n" +
-"            <th>10</th>\n" +
-"          </tr><tr>\n" +
-"            <th>Categoria</th>\n" +
-"            <th>1</th>\n" +
-"          </tr>");
+"          <tr>\n");
+out.println("<th>ID</th>\n");
+out.println("<th>"+ id +"</th>");
+out.println("          </tr><tr>\n" +
+"            <th>Nombre</th>\n");
+out.println("            <th>"+dto1.getEntidad().getNombreProducto()+"</th>");
+out.println("          </tr><tr>\n" +
+"            <th>Descripcion</th>\n" );
+out.println("            <th>"+dto1.getEntidad().getDescripcionProducto()+"</th>");
+out.println("          </tr><tr>\n" +
+"            <th>Precio</th>\n"  );
+out.println("            <th>"+dto1.getEntidad().getPrecio()+"</th>");
+out.println("          </tr><tr>\n" +
+"            <th>Inventario</th>\n" );
+out.println("            <th>"+dto1.getEntidad().getExistencia()+"</th>");
+out.println("          </tr><tr>\n" +
+"            <th>Categoria</th>\n" );
+out.println("            <th>"+categoria+"</th>");
+out.println("          </tr>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -120,7 +134,11 @@ public class VerProducto extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        try {
+            processRequest(request, response);
+        } catch (SQLException ex) {
+            Logger.getLogger(VerProducto.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     /**
@@ -134,7 +152,11 @@ public class VerProducto extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        try {
+            processRequest(request, response);
+        } catch (SQLException ex) {
+            Logger.getLogger(VerProducto.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     /**

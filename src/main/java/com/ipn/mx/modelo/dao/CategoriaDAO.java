@@ -128,6 +128,7 @@ public class CategoriaDAO {
             ps.setInt(1, dto.getEntidad().getIdCategoria());
             rs = ps.executeQuery();
             if(rs.next()){
+                dtoResultado= new CategoriaDTO();
                 dtoResultado.getEntidad().setIdCategoria((int) rs.getLong(1));
                 dtoResultado.getEntidad().setNombreCategoria(rs.getString(2));
                 dtoResultado.getEntidad().setDescripcionCategoria(rs.getString(3));                

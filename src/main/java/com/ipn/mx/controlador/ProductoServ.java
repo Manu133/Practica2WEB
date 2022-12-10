@@ -4,8 +4,14 @@
  */
 package com.ipn.mx.controlador;
 
+import com.ipn.mx.modelo.dao.ProductoDAO;
+import com.ipn.mx.modelo.dto.ProductoDTO;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -28,8 +34,11 @@ public class ProductoServ extends HttpServlet {
      * @throws IOException if an I/O error occurs
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+            throws ServletException, IOException, SQLException {
         response.setContentType("text/html;charset=UTF-8");
+        request.setCharacterEncoding("UTF-8");
+        ProductoDAO dao = new ProductoDAO();
+        ArrayList<ProductoDTO> productos = dao.selectAll();
         try ( PrintWriter out = response.getWriter()) {
             /* TODO output your page here. You may use following sample code. */
            out.println("<!DOCTYPE html>\n" +
@@ -43,7 +52,7 @@ public class ProductoServ extends HttpServlet {
 "        <script type=\"text/javascript\" src=\"js/jquery-3.6.1.min.js\"> </script>   \n" +
 "        <meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">\n" +
 "    </head>");
-            out.println("<body class=\"p-3 m-0 border-0 bd-example\">\n" +
+            out.println("<body class=\"p-3 m-0 border-0 bd`-example\">\n" +
 "    <!-- Example Code -->\n" +
 "    <div>\n" +
 "      <nav class=\"navbar navbar-expand-lg navbar-dark bg-dark\">\n" +
@@ -97,32 +106,26 @@ public class ProductoServ extends HttpServlet {
 "            <th>Eliminar</th>\n" +
 "            <th>Actualizar</th>\n" +
 "          </tr>");
-             out.println(" <tr>\n" +
-"            <th><a class=\"btn btn-light\" href=\"VerProducto\" id=\"\">1</a></th>\n" +
-"            <th>Iphone 13</th>\n" +
-"            <th>Iphone 13 de 128gb color blanco.</th>\n" +
-"            <th>$25,000</th>\n" +
-"            <th>30</th>\n" +
-"            <th>1</th>\n" +
-"            <th><a class=\"btn btn-danger\" href=\"ProductoEliminado\" id=\"\">Eliminar</a></th>\n" +
-"            <th><a class=\"btn btn-success\" href=\"EditProducto\" id=\"\">Actualizar</a></th>\n" +
-"          </tr>\n" +
-"          \n" +
-"      </div>\n" +
-"    </div>");
-             out.println(" <tr>\n" +
-"            <th><a class=\"btn btn-light\" href=\"VerProducto\" id=\"\">2</a></th>\n" +
-"            <th>Iphone 14</th>\n" +
-"            <th>Iphone 14 de 128gb color Morado.</th>\n" +
-"            <th>$35,000</th>\n" +
-"            <th>15</th>\n" +
-"            <th>1</th>\n" +
-"            <th><a class=\"btn btn-danger\" href=\"ProductoEliminado\" id=\"\">Eliminar</a></th>\n" +
-"            <th><a class=\"btn btn-success\" href=\"EditProducto\" id=\"\">Actualizar</a></th>\n" +
-"          </tr>\n" +
-"          \n" +
-"      </div>\n" +
-"    </div>");
+            for(ProductoDTO dto : productos){
+		String categoria = dao.selectCategoria(dto);
+		out.println("<tr>");
+		out.println("<td><a class=\"btn btn-light\" href=VerProducto?id=" + dto.getEntidad().getIdProducto()+ ">" + dto.getEntidad().getIdProducto()+ "</a></td>");
+		out.println("<td>" + dto.getEntidad().getNombreProducto()+ "</td>");
+		out.println("<td>" + dto.getEntidad().getDescripcionProducto()+ "</td>");
+		out.println("<td> $" + dto.getEntidad().getPrecio()+ "</td>");
+		out.println("<td>" + dto.getEntidad().getExistencia()+ "</td>");
+		out.println("<td>" + categoria + "</td>");
+		out.println("<td>");
+		out.println("<a class=\"btn btn-danger\" href=ProductoEliminado?id="+ dto.getEntidad().getIdProducto()+ ">Eliminar</a>");
+		out.println("</td>");
+                out.println("<td>");
+                out.println("<a class=\"btn btn-success\" href=EditProducto?id=" + dto.getEntidad().getIdProducto()+ ">Actualizar</a>");
+		out.println("</td>");
+		out.println("</tr>");
+	    }
+            out.println("</table>");
+	    out.println("</div>");
+	    out.println("</div>");
              
               out.println(" </body>\n" +
 "</html>");
@@ -141,7 +144,11 @@ public class ProductoServ extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        try {
+            processRequest(request, response);
+        } catch (SQLException ex) {
+            Logger.getLogger(ProductoServ.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     /**
@@ -155,7 +162,11 @@ public class ProductoServ extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        try {
+            processRequest(request, response);
+        } catch (SQLException ex) {
+            Logger.getLogger(ProductoServ.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     /**

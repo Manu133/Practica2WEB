@@ -29,13 +29,15 @@ public class ProductoDAO {
             "select * from producto";
     private static final String SQL_SELECT = 
             "select * from producto where idProducto = ?";
+    private static final String SQL_SELECT_CATEGORIA =
+            "SELECT categoria.nombreCategoria FROM producto INNER JOIN categoria ON producto.idCategoria = categoria.idCategoria WHERE producto.idProducto = ?";
     private Connection con;
     
     private void obtenerConexion(){
         String usuario = "root";
         String clave = "root";
         String driverMysql = "com.mysql.cj.jdbc.Driver";
-        String url = "jdbc:mysql://localhost:3306/ejercicio1_3cm17";
+        String url = "jdbc:mysql://localhost:3306/practica1";
         
         try{
             Class.forName(driverMysql);
@@ -118,7 +120,7 @@ public class ProductoDAO {
             if(ps != null) ps.close();
             if(con != null) con.close();
         }
-        if(productos.size()>0) return productos;
+        if(!productos.isEmpty()) return productos;
         return null;
     }
     
@@ -146,5 +148,25 @@ public class ProductoDAO {
             if(con != null) con.close();
         }
         return dtoResultado;
+    }
+    
+    public String selectCategoria(ProductoDTO dto) throws SQLException{
+	obtenerConexion();
+	PreparedStatement ps = null;
+	ResultSet rs = null;
+	String categoria = "";
+	try {
+	    ps = con.prepareStatement(SQL_SELECT_CATEGORIA);
+	    ps.setLong(1, dto.getEntidad().getIdProducto());
+	    rs = ps.executeQuery();
+	    if(rs.next()){
+		categoria = rs.getString(1);
+	    }
+	} finally {
+	    if(rs != null) rs.close();
+	    if(ps != null) ps.close();
+	    if(con != null) con.close();
+	}
+	return categoria;
     }
 }

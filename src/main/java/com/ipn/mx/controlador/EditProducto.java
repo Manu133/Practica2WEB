@@ -4,8 +4,17 @@
  */
 package com.ipn.mx.controlador;
 
+
+import com.ipn.mx.modelo.dao.ProductoDAO;
+import com.ipn.mx.modelo.dao.CategoriaDAO;
+import com.ipn.mx.modelo.dto.ProductoDTO;
+import com.ipn.mx.modelo.dto.CategoriaDTO;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -28,8 +37,20 @@ public class EditProducto extends HttpServlet {
      * @throws IOException if an I/O error occurs
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+            throws ServletException, IOException, SQLException  {
         response.setContentType("text/html;charset=UTF-8");
+        request.setCharacterEncoding("UTF-8");
+        String id = request.getParameter("id");
+        int idProducto = Integer.parseInt(id);
+        ProductoDAO dao = new ProductoDAO();
+	CategoriaDAO daoc = new CategoriaDAO();
+	ProductoDTO dto1 = new ProductoDTO();
+	dto1.getEntidad().setIdProducto(idProducto);
+	ProductoDTO dto2 = dao.select(dto1);
+	String categoria = dao.selectCategoria(dto1);
+	ArrayList<CategoriaDTO> categorias = daoc.selectAll();
+        
+        
         try ( PrintWriter out = response.getWriter()) {
             /* TODO output your page here. You may use following sample code. */
             out.println("<!DOCTYPE html>\n" +
@@ -92,22 +113,31 @@ public class EditProducto extends HttpServlet {
 "        <div class=\"card text-white bg-dark\">\n" +
 "          <div class=\"card-header text-center\">Actualizar Producto</div>\n" +
 "          <div class=\"card-body\">\n" +
-"            <form action=\"Actualizado\" method=\"POST\">\n" +
-"              <div class=\"mb-3\"> <label>Nombre Producto</label></div>\n" +
-"              <div class=\"mb-3\"><input class=\"form-control\" type=\"text\" name=\"nombreCat\" value=\"Coca 2 lts\"></div>\n" +
-"              <div class=\"mb-3\"> <label>Descripción</label></div>\n" +
-"              <div class=\"mb-3\"><input class=\"form-control\" type=\"text\" name=\"descCat\" value=\"descripcion perrona\"></div>\n" +
-"              <div class=\"mb-3\"> <label>Precio</label></div>\n" +
-"              <div class=\"mb-3\"><input class=\"form-control\" type=\"text\" name=\"precioCat\" value=\"1$\"></div>\n" +
-"              <div class=\"mb-3\"> <label>Inventario</label></div>\n" +
-"              <div class=\"mb-3\"><input class=\"form-control\" type=\"text\" name=\"invCat\" value=\"10\"></div>\n" +
-"              <div class=\"mb-3\"> <label>Categoria</label></div>\n" +
-"              <div class=\"mb-3\"><select class=\"form-select\" name=\"categoria\">+\n" +
-"\"  <option selected>Open this select menu</option>\\n\" +\n" +
-"\"  <option value=\\\"1\\\">1</option>\\n\" +\n" +
-"\"  <option value=\\\"2\\\">2</option>\\n\" +\n" +
-"\"  <option value=\\\"3\\\">3</option>\\n\" </div>\n" +
-"</select></div>               <div class=\"mb-3\"><button class=\"btn btn-secondary w-100\" type=\"submint\" value=\"enviar\">Actualizar</button> </div>\n" +
+"            <form action=\"Actualizado\" method=\"POST\">\n" );
+out.println("              <div class=\"mb-3\"> <label>Id Producto</label></div>\n");
+out.println("              <div class=\"mb-3\"><input class=\"form-control\" type=\"text\" name=\"idProd\" value=\""+ dto1.getEntidad().getIdProducto() +"\"></div>\n" +
+"              <div class=\"mb-3\"> " );
+out.println("              <div class=\"mb-3\"> <label>Nombre Producto</label></div>\n");
+out.println("              <div class=\"mb-3\"><input class=\"form-control\" type=\"text\" name=\"nombreProd\" value=\""+ dto1.getEntidad().getNombreProducto() +"\"></div>\n" +
+"              <div class=\"mb-3\"> <label>Descripción</label></div>\n" );
+out.println("              <div class=\"mb-3\"><input class=\"form-control\" type=\"text\" name=\"descProd\" value=\""+ dto1.getEntidad().getDescripcionProducto() +"\"></div>\n" +
+"              <div class=\"mb-3\"> <label>Precio</label></div>\n");
+out.println("              <div class=\"mb-3\"><input class=\"form-control\" type=\"text\" name=\"precioProd\" value=\""+ dto1.getEntidad().getPrecio()+"\"></div>\n" +
+"              <div class=\"mb-3\"> <label>Inventario</label></div>\n");
+out.println("              <div class=\"mb-3\"><input class=\"form-control\" type=\"text\" name=\"invProd\" value=\""+ dto1.getEntidad().getExistencia()+"\"></div>\n" +
+"              <div class=\"mb-3\"> <label>Categoria</label></div>\n" );
+out.println("              <div class=\"mb-3\"><select class=\"form-select\" name=\"categoria\">+\n" );
+for(CategoriaDTO dto:categorias){
+		if(categoria.equals(dto.getEntidad().getNombreCategoria())){ 
+		    out.println("<option value=\"" + dto.getEntidad().getNombreCategoria() + "\" selected>" 
+			+ dto.getEntidad().getNombreCategoria() + "</option>");
+		}
+		else{
+		    out.println("<option value=\"" + dto.getEntidad().getNombreCategoria() + "\">" 
+			+ dto.getEntidad().getNombreCategoria() + "</option>");
+		}
+	    }
+out.println("</select></div>               <div class=\"mb-3\"><button class=\"btn btn-secondary w-100\" type=\"submint\" value=\"enviar\">Actualizar</button> </div>\n" +
 "            </form>\n" +
 "            \n" +
 "          </div>\n" +
@@ -130,7 +160,11 @@ public class EditProducto extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        try {
+            processRequest(request, response);
+        } catch (SQLException ex) {
+            Logger.getLogger(EditProducto.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     /**
@@ -144,7 +178,11 @@ public class EditProducto extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        try {
+            processRequest(request, response);
+        } catch (SQLException ex) {
+            Logger.getLogger(EditProducto.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     /**
